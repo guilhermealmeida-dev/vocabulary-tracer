@@ -1,13 +1,12 @@
-
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { login } from "../api/auth.api";
-import type { ApiError } from "../api/auth.api";
+import { register } from "../../../services/auth/auth.service";
+import { ApiError } from "../../../services/auth/auth.types";
 
-export function LoginForm() {
+export function RegisterForm() {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -24,14 +23,15 @@ export function LoginForm() {
     const formData = new FormData(event.currentTarget);
 
     const data = {
+      name: formData.get("name") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
     };
 
     try {
-      await login(data);
+      await register(data);
 
-      router.push("/home");
+      router.push("/auth/login");
     } catch (err) {
       setError(err as ApiError);
     } finally {
@@ -49,6 +49,33 @@ export function LoginForm() {
           <p>{error.message}</p>
         </div>
       )}
+
+      <div>
+        <label
+          htmlFor="name"
+          className="mb-2 block text-sm font-medium"
+        >
+          Name
+        </label>
+
+        <input
+          id="name"
+          name="name"
+          type="text"
+          placeholder="Your name"
+          required
+          disabled={isLoading}
+          minLength={2}
+          maxLength={100}
+          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 disabled:opacity-50"
+        />
+
+        {error?.errors?.name?.map((message) => (
+          <p key={message} className="mt-1 text-xs text-red-400">
+            {message}
+          </p>
+        ))}
+      </div>
 
       <div>
         <label
@@ -87,9 +114,11 @@ export function LoginForm() {
           id="password"
           name="password"
           type="password"
-          placeholder="Your password"
+          placeholder="Create a password"
           required
           disabled={isLoading}
+          minLength={8}
+          maxLength={72}
           className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 disabled:opacity-50"
         />
 
@@ -105,7 +134,7 @@ export function LoginForm() {
         disabled={isLoading}
         className="w-full rounded-lg bg-indigo-600 py-3 font-medium transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isLoading ? "Signing in..." : "Sign in"}
+        {isLoading ? "Creating account..." : "Create account"}
       </button>
     </form>
   );

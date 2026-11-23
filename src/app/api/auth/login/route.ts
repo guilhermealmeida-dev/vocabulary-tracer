@@ -1,9 +1,9 @@
+import { loginSchema } from "@/features/auth/login/login.schema";
+import { LoginUserUseCase } from "@/features/auth/login/login.use-case";
+import { UserRepository } from "@/features/repositories/user.repository";
 import { NextResponse } from "next/server";
 import { ZodError, z } from "zod";
 
-import { loginSchema } from "@/features/auth/schemas/login.schema";
-import { UserRepository } from "@/features/auth/repositories/user.repository";
-import { LoginUserService } from "@/features/auth/services/login-user.service";
 
 export async function POST(request: Request) {
   try {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     const userRepository = new UserRepository();
 
-    const loginUserService = new LoginUserService(userRepository);
+    const loginUserService = new LoginUserUseCase(userRepository);
 
     const user = await loginUserService.execute(input);
 

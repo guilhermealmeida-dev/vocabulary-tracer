@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { z, ZodError } from "zod";
 import { Prisma } from "@/generated/prisma/client";
+import { registerSchema } from "@/features/auth/register/register.schema";
+import { UserRepository } from "@/features/repositories/user.repository";
+import { RegisterUserUseCase } from "@/features/auth/register/register.use-case";
 
-import { registerSchema } from "@/features/auth/schemas/register.schema";
-import { UserRepository } from "@/features/auth/repositories/user.repository";
-import { RegisterUserService } from "@/features/auth/services/register-user.service";
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     const userRepository = new UserRepository();
 
-    const registerUserService = new RegisterUserService(userRepository);
+    const registerUserService = new RegisterUserUseCase(userRepository);
 
     const user = await registerUserService.execute(input);
 

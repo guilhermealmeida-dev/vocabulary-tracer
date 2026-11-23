@@ -1,11 +1,8 @@
-import "server-only";
-
 import bcrypt from "bcryptjs";
+import { RegisterInput } from "./register.schema";
+import { UserRepository } from "@/features/repositories/user.repository";
 
-import { UserRepository } from "../repositories/user.repository";
-import { RegisterInput } from "../schemas/register.schema";
-
-export class RegisterUserService {
+export class RegisterUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
   ) {}
