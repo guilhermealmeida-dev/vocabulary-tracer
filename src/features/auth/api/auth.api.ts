@@ -38,3 +38,37 @@ export async function register(
 
   return result as RegisterResponse;
 }
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export async function login(
+  data: LoginRequest,
+): Promise<LoginResponse> {
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw result as ApiError;
+  }
+
+  return result as LoginResponse;
+}
