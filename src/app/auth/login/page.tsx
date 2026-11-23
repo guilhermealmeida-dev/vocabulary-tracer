@@ -7,7 +7,7 @@ export default function LoginPage() {
       description="Sign in to continue tracking your vocabulary."
       footerText="Don't have an account?"
       footerLinkText="Create account"
-      footerLinkHref="/register"
+      footerLinkHref="/auth/register"
     >
       <form className="space-y-5">
         <div>
