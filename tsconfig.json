@@ -23,6 +23,7 @@
       "@/*": ["./src/*"]
     }
   },
+  "outDir": "./dist",
   "include": [
     "next-env.d.ts",
     "**/*.ts",
