@@ -6,20 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "db:generate": "prisma generate --config ./prisma7.config.ts",
-    "db:migrate": "prisma migrate dev --config ./prisma7.config.ts",
-    "db:studio": "prisma studio --config ./prisma7.config.ts"
+    "lint": "eslint"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.10.1",
-    "@prisma/client": "^7.10.1",
+    "@prisma/composer": "0.40.0",
+    "@prisma/composer-prisma-cloud": "0.40.0",
+    "@prisma/orm-postgres": "8.0.0-rc.25",
+    "arktype": "^2.2.10",
     "bcryptjs": "^3.0.3",
     "dotenv": "^18.0.10",
+    "effect": "4.1.4",
     "jose": "^6.2.18",
     "next": "16.4.6",
     "pg": "^8.23.1",
-    "prisma": "^7.10.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "^4.6.7"
@@ -33,7 +32,14 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "prisma": "8.0.0-rc.35",
     "tailwindcss": "4.3.3",
     "typescript": "^5"
+  },
+  "overrides": {
+    "effect": "4.1.4",
+    "@effect/platform-bun": "4.1.4",
+    "@effect/platform-node": "4.1.4",
+    "@effect/platform-node-shared": "4.1.4"
   }
 }

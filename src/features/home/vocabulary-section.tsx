@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PartOfSpeechType } from "@/generated/prisma/enums";
+import { PartOfSpeechType } from "@/lib/part-of-speech-type";
 
 type Category = PartOfSpeechType;
 

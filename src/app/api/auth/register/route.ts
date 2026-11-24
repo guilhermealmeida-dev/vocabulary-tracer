@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { z, ZodError } from "zod";
-import { Prisma } from "@/generated/prisma/client";
 import { registerSchema } from "@/features/auth/register/register.schema";
 import { UserRepository } from "@/features/repositories/user.repository";
 import { RegisterUserUseCase } from "@/features/auth/register/register.use-case";
+
+function isUniqueConstraintViolation(error: unknown) {
+  return (
+    error instanceof Error &&
+    (error as Error & { sqlState?: string }).sqlState === "23505"
+  );
+}
 
 export async function POST(request: Request) {
   try {
@@ -42,10 +48,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+    if (isUniqueConstraintViolation(error)) {
       return NextResponse.json(
         { message: "Email is already registered." },
         { status: 409 },

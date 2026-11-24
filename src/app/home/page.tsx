@@ -9,7 +9,7 @@ import { HomeDashboard } from "@/features/home/home-dashboard";
 import type { Category } from "@/features/home/category-statistics";
 import type { VocabularyWord } from "@/features/home/vocabulary-section";
 
-import { PartOfSpeechType } from "@/generated/prisma/enums";
+import { PartOfSpeechType } from "@/lib/part-of-speech-type";
 
 const CATEGORY_DETAILS: Record<
   PartOfSpeechType,
@@ -106,18 +106,24 @@ export default async function HomePage() {
 
   const totalCategories = Object.values(PartOfSpeechType).length;
 
-  const words: VocabularyWord[] = userWords.map(({ word }) => ({
-    id: word.id,
-    name: word.name,
-    categories: word.partsOfSpeech.map((item) => item.category),
-    meanings: [
-      ...new Set(
-        word.partsOfSpeech.flatMap((item) =>
-          item.meanings.map((meaning) => meaning.meaning),
-        ),
-      ),
-    ],
-  }));
+  const words: VocabularyWord[] = userWords.flatMap(({ word }) =>
+    word
+      ? [
+          {
+            id: word.id,
+            name: word.name,
+            categories: word.partsOfSpeech.map((item) => item.category),
+            meanings: [
+              ...new Set(
+                word.partsOfSpeech.flatMap((item) =>
+                  item.meanings.map((meaning) => meaning.meaning),
+                ),
+              ),
+            ],
+          },
+        ]
+      : [],
+  );
 
   return (
     <HomeDashboard

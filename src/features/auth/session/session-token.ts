@@ -1,11 +1,12 @@
 import "server-only";
 
 import { SignJWT, jwtVerify } from "jose";
+import service from "../../../../service.mjs";
 
 const SESSION_DURATION = "7d";
 
 function getSecretKey() {
-  const secret = process.env.SESSION_SECRET;
+  const secret = service.input().sessionSecret.expose();
 
   if (!secret || secret.length < 32) {
     throw new Error("SESSION_SECRET must have at least 32 characters");

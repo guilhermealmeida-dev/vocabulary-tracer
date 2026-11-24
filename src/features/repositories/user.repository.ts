@@ -1,24 +1,20 @@
 import "server-only";
 
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/prisma";
 
 export class UserRepository {
   async findByEmail(email: string) {
-    return prisma.user.findUnique({
-      where: { email },
-    });
+    const db = getDb();
+
+    return db.orm.public.User.where((user) => user.email.eq(email)).first();
   }
 
   async findById(id: string) {
-    return prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-      },
-    });
+    const db = getDb();
+
+    return db.orm.public.User
+      .select("id", "name", "email", "createdAt")
+      .first({ id });
   }
 
   async create(data: {
@@ -26,14 +22,10 @@ export class UserRepository {
     email: string;
     passwordHash: string;
   }) {
-    return prisma.user.create({
-      data,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-      },
-    });
+    const db = getDb();
+
+    return db.orm.public.User
+      .select("id", "name", "email", "createdAt")
+      .create(data);
   }
 }

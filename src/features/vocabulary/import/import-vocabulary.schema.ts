@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PartOfSpeechType } from "@/generated/prisma/enums";
+import { PartOfSpeechType } from "@/lib/part-of-speech-type";
 
 const wordVariationSchema = z.object({
   form: z.string().trim().min(1),

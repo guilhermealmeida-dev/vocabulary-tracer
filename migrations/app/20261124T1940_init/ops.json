@@ -1,0 +1,1150 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "createNativeEnumType.PartOfSpeechType",
+    "label": "Create enum type \"PartOfSpeechType\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "type",
+        "name": "PartOfSpeechType"
+      }
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "create enum type \"PartOfSpeechType\"",
+        "sql": "CREATE TYPE \"public\".\"PartOfSpeechType\" AS ENUM ('NOUN', 'VERB', 'ADJECTIVE', 'ADVERB', 'PRONOUN', 'PREPOSITION', 'CONJUNCTION', 'DETERMINER', 'INTERJECTION', 'AUXILIARY_VERB')",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "createNativeEnumType.WordLearningStatus",
+    "label": "Create enum type \"WordLearningStatus\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "type",
+        "name": "WordLearningStatus"
+      }
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "create enum type \"WordLearningStatus\"",
+        "sql": "CREATE TYPE \"public\".\"WordLearningStatus\" AS ENUM ('NEW', 'RECOGNIZED', 'KNOWN', 'ACTIVE')",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.IrregularVerbForm",
+    "label": "Create table \"IrregularVerbForm\"",
+    "summary": "Creates table \"IrregularVerbForm\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "IrregularVerbForm"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"IrregularVerbForm\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"IrregularVerbForm\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"IrregularVerbForm\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"IrregularVerbForm\"",
+        "sql": "CREATE TABLE \"public\".\"IrregularVerbForm\" (\n  \"id\" text NOT NULL,\n  \"pastParticiple\" text NOT NULL,\n  \"pastParticipleTranslations\" text[],\n  \"pastSimple\" text NOT NULL,\n  \"pastSimpleTranslations\" text[],\n  \"wordCategoryId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"IrregularVerbForm\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"IrregularVerbForm\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"IrregularVerbForm\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.User",
+    "label": "Create table \"User\"",
+    "summary": "Creates table \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"User\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"User\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"User\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"User\"",
+        "sql": "CREATE TABLE \"public\".\"User\" (\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"passwordHash\" text NOT NULL,\n  \"updatedAt\" timestamp(3) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"User\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"User\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"User\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.UserWord",
+    "label": "Create table \"UserWord\"",
+    "summary": "Creates table \"UserWord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "UserWord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"UserWord\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserWord\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"UserWord\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"UserWord\"",
+        "sql": "CREATE TABLE \"public\".\"UserWord\" (\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"status\" \"WordLearningStatus\" DEFAULT 'NEW'::\"WordLearningStatus\" NOT NULL,\n  \"updatedAt\" timestamp(3) NOT NULL,\n  \"userId\" text NOT NULL,\n  \"wordId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"UserWord\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"UserWord\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"UserWord\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Word",
+    "label": "Create table \"Word\"",
+    "summary": "Creates table \"Word\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Word"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Word\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Word\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Word\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Word\"",
+        "sql": "CREATE TABLE \"public\".\"Word\" (\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"updatedAt\" timestamp(3) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Word\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Word\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Word\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.WordCategory",
+    "label": "Create table \"WordCategory\"",
+    "summary": "Creates table \"WordCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WordCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WordCategory\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WordCategory\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"WordCategory\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WordCategory\"",
+        "sql": "CREATE TABLE \"public\".\"WordCategory\" (\n  \"category\" \"PartOfSpeechType\" NOT NULL,\n  \"id\" text NOT NULL,\n  \"wordId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WordCategory\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"WordCategory\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"WordCategory\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.WordMeaning",
+    "label": "Create table \"WordMeaning\"",
+    "summary": "Creates table \"WordMeaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WordMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WordMeaning\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WordMeaning\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"WordMeaning\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WordMeaning\"",
+        "sql": "CREATE TABLE \"public\".\"WordMeaning\" (\n  \"id\" text NOT NULL,\n  \"meaning\" text NOT NULL,\n  \"wordCategoryId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WordMeaning\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"WordMeaning\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"WordMeaning\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.WordVariation",
+    "label": "Create table \"WordVariation\"",
+    "summary": "Creates table \"WordVariation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WordVariation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WordVariation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WordVariation\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"WordVariation\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WordVariation\"",
+        "sql": "CREATE TABLE \"public\".\"WordVariation\" (\n  \"form\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"translations\" text[],\n  \"type\" text NOT NULL,\n  \"wordCategoryId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WordVariation\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"WordVariation\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"WordVariation\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "index.IrregularVerbForm.IrregularVerbForm_wordCategoryId_key",
+    "label": "Create index \"IrregularVerbForm_wordCategoryId_key\" on \"IrregularVerbForm\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "IrregularVerbForm_wordCategoryId_key",
+        "table": "IrregularVerbForm"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"IrregularVerbForm_wordCategoryId_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"IrregularVerbForm_wordCategoryId_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"IrregularVerbForm_wordCategoryId_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"IrregularVerbForm_wordCategoryId_key\"",
+        "sql": "CREATE UNIQUE INDEX \"IrregularVerbForm_wordCategoryId_key\" ON \"public\".\"IrregularVerbForm\" (\"wordCategoryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"IrregularVerbForm_wordCategoryId_key\" exists on \"IrregularVerbForm\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"IrregularVerbForm_wordCategoryId_key\"",
+          "i",
+          "I",
+          "\"public\".\"IrregularVerbForm\"",
+          "btree",
+          "[\"wordCategoryId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.User.User_email_key",
+    "label": "Create index \"User_email_key\" on \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "User_email_key",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"User_email_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"User_email_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"User_email_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"User_email_key\"",
+        "sql": "CREATE UNIQUE INDEX \"User_email_key\" ON \"public\".\"User\" (\"email\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"User_email_key\" exists on \"User\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"User_email_key\"",
+          "i",
+          "I",
+          "\"public\".\"User\"",
+          "btree",
+          "[\"email\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UserWord.UserWord_userId_idx",
+    "label": "Create index \"UserWord_userId_idx\" on \"UserWord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UserWord_userId_idx",
+        "table": "UserWord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UserWord_userId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserWord_userId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"UserWord_userId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UserWord_userId_idx\"",
+        "sql": "CREATE INDEX \"UserWord_userId_idx\" ON \"public\".\"UserWord\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UserWord_userId_idx\" exists on \"UserWord\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"UserWord_userId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"UserWord\"",
+          "btree",
+          "[\"userId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UserWord.UserWord_userId_wordId_key",
+    "label": "Create index \"UserWord_userId_wordId_key\" on \"UserWord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UserWord_userId_wordId_key",
+        "table": "UserWord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UserWord_userId_wordId_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserWord_userId_wordId_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"UserWord_userId_wordId_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UserWord_userId_wordId_key\"",
+        "sql": "CREATE UNIQUE INDEX \"UserWord_userId_wordId_key\" ON \"public\".\"UserWord\" (\"userId\", \"wordId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UserWord_userId_wordId_key\" exists on \"UserWord\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"UserWord_userId_wordId_key\"",
+          "i",
+          "I",
+          "\"public\".\"UserWord\"",
+          "btree",
+          "[\"userId\",\"wordId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Word.Word_name_idx",
+    "label": "Create index \"Word_name_idx\" on \"Word\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Word_name_idx",
+        "table": "Word"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Word_name_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Word_name_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Word_name_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Word_name_idx\"",
+        "sql": "CREATE INDEX \"Word_name_idx\" ON \"public\".\"Word\" (\"name\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Word_name_idx\" exists on \"Word\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Word_name_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Word\"",
+          "btree",
+          "[\"name\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Word.Word_name_key",
+    "label": "Create index \"Word_name_key\" on \"Word\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Word_name_key",
+        "table": "Word"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Word_name_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Word_name_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Word_name_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Word_name_key\"",
+        "sql": "CREATE UNIQUE INDEX \"Word_name_key\" ON \"public\".\"Word\" (\"name\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Word_name_key\" exists on \"Word\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Word_name_key\"",
+          "i",
+          "I",
+          "\"public\".\"Word\"",
+          "btree",
+          "[\"name\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WordCategory.WordCategory_wordId_category_key",
+    "label": "Create index \"WordCategory_wordId_category_key\" on \"WordCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WordCategory_wordId_category_key",
+        "table": "WordCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WordCategory_wordId_category_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WordCategory_wordId_category_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"WordCategory_wordId_category_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WordCategory_wordId_category_key\"",
+        "sql": "CREATE UNIQUE INDEX \"WordCategory_wordId_category_key\" ON \"public\".\"WordCategory\" (\"wordId\", \"category\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WordCategory_wordId_category_key\" exists on \"WordCategory\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"WordCategory_wordId_category_key\"",
+          "i",
+          "I",
+          "\"public\".\"WordCategory\"",
+          "btree",
+          "[\"wordId\",\"category\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WordMeaning.WordMeaning_wordCategoryId_meaning_key",
+    "label": "Create index \"WordMeaning_wordCategoryId_meaning_key\" on \"WordMeaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WordMeaning_wordCategoryId_meaning_key",
+        "table": "WordMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WordMeaning_wordCategoryId_meaning_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WordMeaning_wordCategoryId_meaning_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"WordMeaning_wordCategoryId_meaning_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WordMeaning_wordCategoryId_meaning_key\"",
+        "sql": "CREATE UNIQUE INDEX \"WordMeaning_wordCategoryId_meaning_key\" ON \"public\".\"WordMeaning\" (\"wordCategoryId\", \"meaning\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WordMeaning_wordCategoryId_meaning_key\" exists on \"WordMeaning\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"WordMeaning_wordCategoryId_meaning_key\"",
+          "i",
+          "I",
+          "\"public\".\"WordMeaning\"",
+          "btree",
+          "[\"wordCategoryId\",\"meaning\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WordVariation.WordVariation_wordCategoryId_form_key",
+    "label": "Create index \"WordVariation_wordCategoryId_form_key\" on \"WordVariation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WordVariation_wordCategoryId_form_key",
+        "table": "WordVariation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WordVariation_wordCategoryId_form_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WordVariation_wordCategoryId_form_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"WordVariation_wordCategoryId_form_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WordVariation_wordCategoryId_form_key\"",
+        "sql": "CREATE UNIQUE INDEX \"WordVariation_wordCategoryId_form_key\" ON \"public\".\"WordVariation\" (\"wordCategoryId\", \"form\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WordVariation_wordCategoryId_form_key\" exists on \"WordVariation\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"WordVariation_wordCategoryId_form_key\"",
+          "i",
+          "I",
+          "\"public\".\"WordVariation\"",
+          "btree",
+          "[\"wordCategoryId\",\"form\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.IrregularVerbForm.IrregularVerbForm_wordCategoryId_fkey",
+    "label": "Add foreign key \"IrregularVerbForm_wordCategoryId_fkey\" on \"IrregularVerbForm\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "IrregularVerbForm_wordCategoryId_fkey",
+        "table": "IrregularVerbForm"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"IrregularVerbForm_wordCategoryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "IrregularVerbForm_wordCategoryId_fkey",
+          "public",
+          "\"public\".\"IrregularVerbForm\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"IrregularVerbForm_wordCategoryId_fkey\" on \"IrregularVerbForm\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"IrregularVerbForm_wordCategoryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"IrregularVerbForm\"\nADD CONSTRAINT \"IrregularVerbForm_wordCategoryId_fkey\"\nFOREIGN KEY (\"wordCategoryId\")\nREFERENCES \"public\".\"WordCategory\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"IrregularVerbForm_wordCategoryId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "IrregularVerbForm_wordCategoryId_fkey",
+          "public",
+          "\"public\".\"IrregularVerbForm\"",
+          "f",
+          "[\"wordCategoryId\"]",
+          "\"public\".\"WordCategory\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UserWord.UserWord_userId_fkey",
+    "label": "Add foreign key \"UserWord_userId_fkey\" on \"UserWord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UserWord_userId_fkey",
+        "table": "UserWord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UserWord_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserWord_userId_fkey",
+          "public",
+          "\"public\".\"UserWord\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"UserWord_userId_fkey\" on \"UserWord\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UserWord_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UserWord\"\nADD CONSTRAINT \"UserWord_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UserWord_userId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "UserWord_userId_fkey",
+          "public",
+          "\"public\".\"UserWord\"",
+          "f",
+          "[\"userId\"]",
+          "\"public\".\"User\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UserWord.UserWord_wordId_fkey",
+    "label": "Add foreign key \"UserWord_wordId_fkey\" on \"UserWord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UserWord_wordId_fkey",
+        "table": "UserWord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UserWord_wordId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserWord_wordId_fkey",
+          "public",
+          "\"public\".\"UserWord\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"UserWord_wordId_fkey\" on \"UserWord\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UserWord_wordId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UserWord\"\nADD CONSTRAINT \"UserWord_wordId_fkey\"\nFOREIGN KEY (\"wordId\")\nREFERENCES \"public\".\"Word\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UserWord_wordId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "UserWord_wordId_fkey",
+          "public",
+          "\"public\".\"UserWord\"",
+          "f",
+          "[\"wordId\"]",
+          "\"public\".\"Word\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WordCategory.WordCategory_wordId_fkey",
+    "label": "Add foreign key \"WordCategory_wordId_fkey\" on \"WordCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WordCategory_wordId_fkey",
+        "table": "WordCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WordCategory_wordId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WordCategory_wordId_fkey",
+          "public",
+          "\"public\".\"WordCategory\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"WordCategory_wordId_fkey\" on \"WordCategory\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WordCategory_wordId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WordCategory\"\nADD CONSTRAINT \"WordCategory_wordId_fkey\"\nFOREIGN KEY (\"wordId\")\nREFERENCES \"public\".\"Word\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WordCategory_wordId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "WordCategory_wordId_fkey",
+          "public",
+          "\"public\".\"WordCategory\"",
+          "f",
+          "[\"wordId\"]",
+          "\"public\".\"Word\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WordMeaning.WordMeaning_wordCategoryId_fkey",
+    "label": "Add foreign key \"WordMeaning_wordCategoryId_fkey\" on \"WordMeaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WordMeaning_wordCategoryId_fkey",
+        "table": "WordMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WordMeaning_wordCategoryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WordMeaning_wordCategoryId_fkey",
+          "public",
+          "\"public\".\"WordMeaning\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"WordMeaning_wordCategoryId_fkey\" on \"WordMeaning\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WordMeaning_wordCategoryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WordMeaning\"\nADD CONSTRAINT \"WordMeaning_wordCategoryId_fkey\"\nFOREIGN KEY (\"wordCategoryId\")\nREFERENCES \"public\".\"WordCategory\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WordMeaning_wordCategoryId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "WordMeaning_wordCategoryId_fkey",
+          "public",
+          "\"public\".\"WordMeaning\"",
+          "f",
+          "[\"wordCategoryId\"]",
+          "\"public\".\"WordCategory\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WordVariation.WordVariation_wordCategoryId_fkey",
+    "label": "Add foreign key \"WordVariation_wordCategoryId_fkey\" on \"WordVariation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WordVariation_wordCategoryId_fkey",
+        "table": "WordVariation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WordVariation_wordCategoryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WordVariation_wordCategoryId_fkey",
+          "public",
+          "\"public\".\"WordVariation\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"WordVariation_wordCategoryId_fkey\" on \"WordVariation\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WordVariation_wordCategoryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WordVariation\"\nADD CONSTRAINT \"WordVariation_wordCategoryId_fkey\"\nFOREIGN KEY (\"wordCategoryId\")\nREFERENCES \"public\".\"WordCategory\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WordVariation_wordCategoryId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "WordVariation_wordCategoryId_fkey",
+          "public",
+          "\"public\".\"WordVariation\"",
+          "f",
+          "[\"wordCategoryId\"]",
+          "\"public\".\"WordCategory\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  }
+]
