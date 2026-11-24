@@ -19,10 +19,7 @@ export async function POST(request: Request) {
     const user = await getSessionUseCase.execute(token);
 
     if (!user) {
-      return NextResponse.json(
-        { message: "Unauthorized." },
-        { status: 401 },
-      );
+      return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
     }
 
     let body: unknown;
@@ -50,14 +47,9 @@ export async function POST(request: Request) {
 
     const vocabularyRepository = new VocabularyRepository();
 
-    const useCase = new SaveVocabularyImportUseCase(
-      vocabularyRepository,
-    );
+    const useCase = new SaveVocabularyImportUseCase(vocabularyRepository);
 
-    const result = await useCase.execute(
-      user.id,
-      validation.data,
-    );
+    const result = await useCase.execute(user.id, validation.data);
 
     return NextResponse.json(
       {
@@ -68,6 +60,11 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Vocabulary import error:", error);
+
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+    }
 
     return NextResponse.json(
       { message: "Unable to import vocabulary." },

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 interface AuthLayoutProps {
@@ -21,8 +22,18 @@ export function AuthLayout({
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 text-white">
       <div className="w-full max-w-md">
         <header className="mb-8 text-center">
-          <Link href="/" className="text-3xl font-bold tracking-tight">
-            Vocabulary<span className="text-indigo-400">Tracer</span>
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center"
+          >
+            <Image
+              src="/images/logo.png"
+              alt="Vocabulary Tracer"
+              width={220}
+              height={147}
+              priority
+              className="h-auto w-52 object-contain"
+            />
           </Link>
 
           <p className="mt-3 text-sm text-slate-400">
@@ -33,7 +44,10 @@ export function AuthLayout({
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
           <div className="mb-7">
             <h1 className="text-2xl font-semibold">{title}</h1>
-            <p className="mt-2 text-sm text-slate-400">{description}</p>
+
+            <p className="mt-2 text-sm text-slate-400">
+              {description}
+            </p>
           </div>
 
           {children}

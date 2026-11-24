@@ -1,4 +1,3 @@
-
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -67,6 +66,8 @@ const CATEGORY_DETAILS: Record<
     color: "bg-teal-500",
   },
 };
+
+export const instant = false;
 
 export default async function HomePage() {
   const cookieStore = await cookies();

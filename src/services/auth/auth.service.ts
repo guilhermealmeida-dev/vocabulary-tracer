@@ -1,7 +1,5 @@
 import { ApiError, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "./auth.types";
 
-
-
 export async function register(
   data: RegisterRequest,
 ): Promise<RegisterResponse> {

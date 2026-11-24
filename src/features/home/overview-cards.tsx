@@ -1,4 +1,3 @@
-
 interface OverviewCardsProps {
   totalWords: number;
   totalCategories: number;

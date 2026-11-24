@@ -5,7 +5,6 @@ import { registerSchema } from "@/features/auth/register/register.schema";
 import { UserRepository } from "@/features/repositories/user.repository";
 import { RegisterUserUseCase } from "@/features/auth/register/register.use-case";
 
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();

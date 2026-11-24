@@ -2,6 +2,8 @@ import { AuthLayout } from "@/components/layout/auth-layout";
 import { GuestGuard } from "@/components/layout/guest-guard";
 import { RegisterForm } from "@/features/auth/register/register-form";
 
+export const instant = false;
+
 export default function RegisterPage() {
   return (
     <GuestGuard>

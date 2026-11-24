@@ -1,7 +1,5 @@
-
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PartOfSpeechType } from "@/generated/prisma/enums";
 
@@ -37,46 +35,195 @@ function getCategoryLabel(category: Category) {
   return categories.find((item) => item.value === category)?.label ?? category;
 }
 
-function WordCard({ word }: { word: VocabularyWord }) {
+interface WordCardProps {
+  word: VocabularyWord;
+  onSelect: (word: VocabularyWord) => void;
+  onEdit: (word: VocabularyWord) => void;
+  onDelete: (word: VocabularyWord) => void;
+}
+
+function WordCard({ word, onSelect, onEdit, onDelete }: WordCardProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <Link
-      href={`/home/words/${word.id}`}
-      className="group rounded-xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-700"
-    >
+    <article className="relative rounded-xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-700">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-          {word.name}
-        </h3>
+        <button
+          type="button"
+          onClick={() => onSelect(word)}
+          className="min-w-0 flex-1 text-left"
+        >
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {word.name}
+          </h3>
+        </button>
 
-        <span className="text-slate-400 transition group-hover:translate-x-1 group-hover:text-indigo-500">
-          →
-        </span>
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {word.categories.map((category) => (
-          <span
-            key={category}
-            className="rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
+        <div className="relative">
+          <button
+            type="button"
+            aria-label={`Options for ${word.name}`}
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen((open) => !open)}
+            className="rounded-lg px-2 py-1 text-xl font-bold text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white"
           >
-            {getCategoryLabel(category)}
-          </span>
-        ))}
+            ⋯
+          </button>
+
+          {isMenuOpen && (
+            <div className="absolute right-0 top-full z-20 mt-1 w-36 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onEdit(word);
+                }}
+                className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onDelete(word);
+                }}
+                className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          {word.meanings.join(", ")}
-        </p>
+      <button
+        type="button"
+        onClick={() => onSelect(word)}
+        className="mt-3 block w-full text-left"
+      >
+        <div className="flex flex-wrap gap-2">
+          {word.categories.map((category) => (
+            <span
+              key={category}
+              className="rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
+            >
+              {getCategoryLabel(category)}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {word.meanings.join(", ")}
+          </p>
+        </div>
+      </button>
+    </article>
+  );
+}
+
+function WordDetailsModal({
+  word,
+  onClose,
+}: {
+  word: VocabularyWord;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="word-modal-title"
+        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
+              Vocabulary details
+            </p>
+
+            <h2
+              id="word-modal-title"
+              className="mt-1 text-2xl font-bold text-slate-900 dark:text-white"
+            >
+              {word.name}
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close modal"
+            className="rounded-lg px-2 py-1 text-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="mt-6 space-y-5">
+          <section>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              Categories
+            </h3>
+
+            <div className="mt-2 flex flex-wrap gap-2">
+              {word.categories.map((category) => (
+                <span
+                  key={category}
+                  className="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
+                >
+                  {getCategoryLabel(category)}
+                </span>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              Meanings
+            </h3>
+
+            <ul className="mt-2 space-y-2">
+              {word.meanings.map((meaning, index) => (
+                <li
+                  key={`${meaning}-${index}`}
+                  className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                >
+                  {meaning}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+          >
+            Close
+          </button>
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
 export function VocabularySection({ words }: VocabularySectionProps) {
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<Category | "ALL">("ALL");
+  const [selectedCategory, setSelectedCategory] = useState<Category | "ALL">(
+    "ALL",
+  );
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedWord, setSelectedWord] = useState<VocabularyWord | null>(null);
 
   const filteredWords = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -113,6 +260,13 @@ export function VocabularySection({ words }: VocabularySectionProps) {
     setCurrentPage(1);
   }
 
+  function handleEdit(word: VocabularyWord) {
+    console.log("Edit:", word.id);
+  }
+
+  function handleDelete(word: VocabularyWord) {
+    console.log("Delete:", word.id);
+  }
   return (
     <section className="space-y-6">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
@@ -170,7 +324,13 @@ export function VocabularySection({ words }: VocabularySectionProps) {
       {paginatedWords.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {paginatedWords.map((word) => (
-            <WordCard key={word.id} word={word} />
+            <WordCard
+              key={word.id}
+              word={word}
+              onSelect={setSelectedWord}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       ) : (
@@ -193,17 +353,18 @@ export function VocabularySection({ words }: VocabularySectionProps) {
             {filteredWords.length} words
           </p>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((page) => page - 1)}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-800"
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:focus:ring-offset-slate-900"
             >
+              <span aria-hidden="true">←</span>
               Previous
             </button>
 
-            <span className="px-2 text-sm font-medium">
+            <span className="min-w-16 text-center text-sm font-semibold text-slate-700 dark:text-slate-200">
               {currentPage} / {totalPages}
             </span>
 
@@ -211,12 +372,20 @@ export function VocabularySection({ words }: VocabularySectionProps) {
               type="button"
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((page) => page + 1)}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-800"
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:focus:ring-offset-slate-900"
             >
               Next
+              <span aria-hidden="true">→</span>
             </button>
           </div>
         </div>
+      )}
+
+      {selectedWord && (
+        <WordDetailsModal
+          word={selectedWord}
+          onClose={() => setSelectedWord(null)}
+        />
       )}
     </section>
   );
