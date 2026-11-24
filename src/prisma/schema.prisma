@@ -12,7 +12,6 @@ datasource db {
   provider = "postgresql"
 }
 
-
 enum PartOfSpeechType {
   NOUN
   VERB
@@ -34,9 +33,9 @@ enum WordLearningStatus {
 }
 
 model User {
-  id           String  @id @default(uuid())
+  id           String @id @default(uuid())
   name         String
-  email        String  @unique
+  email        String @unique
   passwordHash String
 
   vocabulary UserWord[]
@@ -59,7 +58,7 @@ model Word {
 }
 
 model WordCategory {
-  id       String            @id @default(uuid())
+  id       String           @id @default(uuid())
   wordId   String
   category PartOfSpeechType
 
@@ -78,11 +77,11 @@ model WordMeaning {
 
   wordCategory WordCategory @relation(fields: [wordCategoryId], references: [id], onDelete: Cascade)
 
-  @@index([wordCategoryId])
+  @@unique([wordCategoryId, meaning])
 }
 
 model WordVariation {
-  id             String @id @default(uuid())
+  id             String   @id @default(uuid())
   wordCategoryId String
   form           String
   type           String
@@ -97,8 +96,8 @@ model IrregularVerbForm {
   id             String @id @default(uuid())
   wordCategoryId String @unique
 
-  pastSimple              String
-  pastSimpleTranslations  String[]
+  pastSimple             String
+  pastSimpleTranslations String[]
 
   pastParticiple             String
   pastParticipleTranslations String[]
@@ -122,4 +121,3 @@ model UserWord {
   @@unique([userId, wordId])
   @@index([userId])
 }
-

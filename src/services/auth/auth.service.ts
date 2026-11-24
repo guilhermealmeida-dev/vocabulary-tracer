@@ -27,6 +27,7 @@ export async function login(
 ): Promise<LoginResponse> {
   const response = await fetch("/api/auth/login", {
     method: "POST",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
@@ -40,4 +41,39 @@ export async function login(
   }
 
   return result as LoginResponse;
+}
+
+export async function getSession() {
+  const response = await fetch("/api/auth/session", {
+    method: "GET",
+    credentials: "same-origin",
+    cache: "no-store",
+  });
+
+  if (response.status === 401) {
+    return null;
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw result as ApiError;
+  }
+
+  return result.data;
+}
+
+export async function logout() {
+  const response = await fetch("/api/auth/logout", {
+    method: "POST",
+    credentials: "same-origin",
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw result as ApiError;
+  }
+
+  return result;
 }

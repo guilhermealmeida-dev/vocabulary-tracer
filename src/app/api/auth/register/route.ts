@@ -14,9 +14,9 @@ export async function POST(request: Request) {
 
     const userRepository = new UserRepository();
 
-    const registerUserService = new RegisterUserUseCase(userRepository);
+    const registerUserUseCase = new RegisterUserUseCase(userRepository);
 
-    const user = await registerUserService.execute(input);
+    const user = await registerUserUseCase.execute(input);
 
     return NextResponse.json(
       {

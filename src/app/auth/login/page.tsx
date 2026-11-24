@@ -1,9 +1,11 @@
 import { AuthLayout } from "@/components/layout/auth-layout";
+import { GuestGuard } from "@/components/layout/guest-guard";
 import { LoginForm } from "@/features/auth/login/login-form";
 
 export default function LoginPage() {
   return (
-    <AuthLayout
+     <GuestGuard>
+      <AuthLayout
       title="Welcome back"
       description="Sign in to continue tracking your vocabulary."
       footerText="Don't have an account?"
@@ -12,5 +14,7 @@ export default function LoginPage() {
     >
       <LoginForm />
     </AuthLayout>
+    </GuestGuard>
+  
   );
 }
