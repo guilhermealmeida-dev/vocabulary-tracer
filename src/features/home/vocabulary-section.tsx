@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -5,12 +6,24 @@ import { PartOfSpeechType } from "@/generated/prisma/enums";
 
 type Category = PartOfSpeechType;
 
-export type VocabularyWord = {
+export interface VocabularyVariation {
+  id: string;
+  type: string;
+  form: string;
+  translations: string[];
+}
+
+export interface VocabularyWordCategory {
+  category: PartOfSpeechType;
+  meanings: string[];
+  variations: VocabularyVariation[];
+}
+
+export interface VocabularyWord {
   id: string;
   name: string;
-  categories: Category[];
-  meanings: string[];
-};
+  categories: VocabularyWordCategory[];
+}
 
 interface VocabularySectionProps {
   words: VocabularyWord[];
@@ -31,8 +44,25 @@ const categories: { value: Category; label: string }[] = [
 
 const ITEMS_PER_PAGE = 6;
 
+const variationLabels: Record<string, string> = {
+  PLURAL: "Plural",
+  PAST: "Simple Past",
+  PAST_PARTICIPLE: "Past Participle",
+  PRESENT_PARTICIPLE: "Present Participle",
+  THIRD_PERSON_SINGULAR: "Third Person Singular",
+  COMPARATIVE: "Comparative",
+  SUPERLATIVE: "Superlative",
+};
+
 function getCategoryLabel(category: Category) {
   return categories.find((item) => item.value === category)?.label ?? category;
+}
+
+function getVariationLabel(type: string) {
+  return (
+    variationLabels[type] ??
+    type.replaceAll("_", " ").toLowerCase()
+  );
 }
 
 interface WordCardProps {
@@ -42,8 +72,17 @@ interface WordCardProps {
   onDelete: (word: VocabularyWord) => void;
 }
 
-function WordCard({ word, onSelect, onEdit, onDelete }: WordCardProps) {
+function WordCard({
+  word,
+  onSelect,
+  onEdit,
+  onDelete,
+}: WordCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const meanings = word.categories.flatMap(
+    (category) => category.meanings,
+  );
 
   return (
     <article className="relative rounded-xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-700">
@@ -105,17 +144,17 @@ function WordCard({ word, onSelect, onEdit, onDelete }: WordCardProps) {
         <div className="flex flex-wrap gap-2">
           {word.categories.map((category) => (
             <span
-              key={category}
+              key={category.category}
               className="rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
             >
-              {getCategoryLabel(category)}
+              {getCategoryLabel(category.category)}
             </span>
           ))}
         </div>
 
         <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {word.meanings.join(", ")}
+            {meanings.join(", ")}
           </p>
         </div>
       </button>
@@ -141,7 +180,7 @@ function WordDetailsModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="word-modal-title"
-        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900"
+        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -167,7 +206,7 @@ function WordDetailsModal({
           </button>
         </div>
 
-        <div className="mt-6 space-y-5">
+        <div className="mt-6 space-y-6 overflow-y-auto pr-1">
           <section>
             <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               Categories
@@ -176,31 +215,75 @@ function WordDetailsModal({
             <div className="mt-2 flex flex-wrap gap-2">
               {word.categories.map((category) => (
                 <span
-                  key={category}
+                  key={category.category}
                   className="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
                 >
-                  {getCategoryLabel(category)}
+                  {getCategoryLabel(category.category)}
                 </span>
               ))}
             </div>
           </section>
 
-          <section>
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              Meanings
-            </h3>
+          {word.categories.map((category) => (
+            <section
+              key={category.category}
+              className="space-y-4 border-t border-slate-100 pt-5 dark:border-slate-800"
+            >
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+                {getCategoryLabel(category.category)}
+              </h3>
 
-            <ul className="mt-2 space-y-2">
-              {word.meanings.map((meaning, index) => (
-                <li
-                  key={`${meaning}-${index}`}
-                  className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                >
-                  {meaning}
-                </li>
-              ))}
-            </ul>
-          </section>
+              {category.meanings.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                    Meanings
+                  </h4>
+
+                  <ul className="mt-2 space-y-2">
+                    {category.meanings.map((meaning, index) => (
+                      <li
+                        key={`${meaning}-${index}`}
+                        className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                      >
+                        {meaning}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {category.variations.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                    Variations
+                  </h4>
+
+                  <ul className="mt-2 space-y-2">
+                    {category.variations.map((variation) => (
+                      <li
+                        key={variation.id}
+                        className="rounded-lg bg-slate-50 px-3 py-3 dark:bg-slate-800"
+                      >
+                        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                          {getVariationLabel(variation.type)}
+                        </p>
+
+                        <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">
+                          {variation.form}
+                        </p>
+
+                        {variation.translations.length > 0 && (
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                            {variation.translations.join(", ")}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+          ))}
         </div>
 
         <div className="mt-6 flex justify-end">
@@ -217,13 +300,16 @@ function WordDetailsModal({
   );
 }
 
-export function VocabularySection({ words }: VocabularySectionProps) {
+export function VocabularySection({
+  words,
+}: VocabularySectionProps) {
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<Category | "ALL">(
-    "ALL",
-  );
+  const [selectedCategory, setSelectedCategory] = useState<
+    Category | "ALL"
+  >("ALL");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedWord, setSelectedWord] = useState<VocabularyWord | null>(null);
+  const [selectedWord, setSelectedWord] =
+    useState<VocabularyWord | null>(null);
 
   const filteredWords = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -231,19 +317,35 @@ export function VocabularySection({ words }: VocabularySectionProps) {
     return words.filter((word) => {
       const matchesSearch =
         word.name.toLowerCase().includes(normalizedSearch) ||
-        word.meanings.some((meaning) =>
-          meaning.toLowerCase().includes(normalizedSearch),
-        );
+        word.categories.some((category) => {
+          const matchesMeaning = category.meanings.some((meaning) =>
+            meaning.toLowerCase().includes(normalizedSearch),
+          );
+
+          const matchesVariation = category.variations.some(
+            (variation) =>
+              variation.form.toLowerCase().includes(normalizedSearch) ||
+              variation.translations.some((translation) =>
+                translation.toLowerCase().includes(normalizedSearch),
+              ),
+          );
+
+          return matchesMeaning || matchesVariation;
+        });
 
       const matchesCategory =
         selectedCategory === "ALL" ||
-        word.categories.includes(selectedCategory);
+        word.categories.some(
+          (category) => category.category === selectedCategory,
+        );
 
       return matchesSearch && matchesCategory;
     });
   }, [words, search, selectedCategory]);
 
-  const totalPages = Math.ceil(filteredWords.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(
+    filteredWords.length / ITEMS_PER_PAGE,
+  );
 
   const paginatedWords = filteredWords.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -267,6 +369,7 @@ export function VocabularySection({ words }: VocabularySectionProps) {
   function handleDelete(word: VocabularyWord) {
     console.log("Delete:", word.id);
   }
+
   return (
     <section className="space-y-6">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
@@ -349,15 +452,20 @@ export function VocabularySection({ words }: VocabularySectionProps) {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-5 dark:border-slate-800 sm:flex-row">
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
-            {Math.min(currentPage * ITEMS_PER_PAGE, filteredWords.length)} of{" "}
-            {filteredWords.length} words
+            {Math.min(
+              currentPage * ITEMS_PER_PAGE,
+              filteredWords.length,
+            )}{" "}
+            of {filteredWords.length} words
           </p>
 
           <div className="flex items-center gap-3">
             <button
               type="button"
               disabled={currentPage === 1}
-              onClick={() => setCurrentPage((page) => page - 1)}
+              onClick={() =>
+                setCurrentPage((page) => page - 1)
+              }
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:focus:ring-offset-slate-900"
             >
               <span aria-hidden="true">←</span>
@@ -371,7 +479,9 @@ export function VocabularySection({ words }: VocabularySectionProps) {
             <button
               type="button"
               disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((page) => page + 1)}
+              onClick={() =>
+                setCurrentPage((page) => page + 1)
+              }
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:focus:ring-offset-slate-900"
             >
               Next

@@ -42,6 +42,14 @@ export class VocabularyRepository {
                     meaning: true,
                   },
                 },
+                variations: {
+                  select: {
+                    id: true,
+                    type: true,
+                    form: true,
+                    translations: true,
+                  },
+                },
               },
             },
           },

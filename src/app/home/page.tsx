@@ -1,3 +1,4 @@
+
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -109,14 +110,19 @@ export default async function HomePage() {
   const words: VocabularyWord[] = userWords.map(({ word }) => ({
     id: word.id,
     name: word.name,
-    categories: word.partsOfSpeech.map((item) => item.category),
-    meanings: [
-      ...new Set(
-        word.partsOfSpeech.flatMap((item) =>
-          item.meanings.map((meaning) => meaning.meaning),
-        ),
-      ),
-    ],
+
+    categories: word.partsOfSpeech.map((item) => ({
+      category: item.category,
+
+      meanings: item.meanings.map((meaning) => meaning.meaning),
+
+      variations: item.variations.map((variation) => ({
+        id: variation.id,
+        type: variation.type,
+        form: variation.form,
+        translations: variation.translations,
+      })),
+    })),
   }));
 
   return (
