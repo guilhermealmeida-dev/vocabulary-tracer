@@ -21,7 +21,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": [
+      "node"
+    ]
   },
   "outDir": "./dist",
   "include": [
