@@ -12,6 +12,6 @@ export default compute({
   },
   build: nextjs({
     module: import.meta.url,
-    appDir: "..",
+    appDir: "../..",
   }),
 });

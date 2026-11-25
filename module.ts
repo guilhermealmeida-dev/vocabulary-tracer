@@ -1,9 +1,7 @@
-
 import { module } from "@prisma/composer";
 import { rawPostgres } from "@prisma/composer-prisma-cloud";
 
-import webService from "@/features/service";
-
+import webService from "./src/features/service";
 
 export default module("vocabulary-tracer", ({ provision }) => {
   const db = provision(

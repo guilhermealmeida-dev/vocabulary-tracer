@@ -3,22 +3,44 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
 import service from "@/features/service";
 
-const { db } = service.load();
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+const globalForPrisma = globalThis as typeof globalThis & {
+  prisma?: PrismaClient;
 };
 
-const adapter = new PrismaPg({
-  connectionString: db.url,
-});
+let prismaClient: PrismaClient | undefined;
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    adapter,
+function getPrismaClient(): PrismaClient {
+  if (prismaClient) {
+    return prismaClient;
+  }
+
+  if (process.env.NODE_ENV !== "production" && globalForPrisma.prisma) {
+    prismaClient = globalForPrisma.prisma;
+    return prismaClient;
+  }
+
+  const { db } = service.load();
+
+  const adapter = new PrismaPg({
+    connectionString: db.url,
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  prismaClient = new PrismaClient({ adapter });
+
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = prismaClient;
+  }
+
+  return prismaClient;
 }
+
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, property) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client, property, client);
+
+    return typeof value === "function"
+      ? value.bind(client)
+      : value;
+  },
+});
